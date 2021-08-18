@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
-	// "fmt"
-	// "time"
-
+	"github.com/joho/godotenv" //Thanks to joho!
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,7 +21,13 @@ type User struct {
 var user []User
 
 func main() {
-	uri := "URI HERE"
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	uri := os.Getenv("MONGO_URI") //CONFIGURE YOUR .env WITH YOUR URI HAVING "MONGO_URI" AS KEY VALUE
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.NewClient(clientOptions)
 
@@ -35,9 +40,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Connection check end
 
-	// Get collection and findOne example object
 	collection := client.Database("GolangDb").Collection("GolangCollection")
 	cursor, err := collection.Find(context.TODO(), bson.D{})
 
@@ -53,7 +56,6 @@ func main() {
 		user = append(user, newUser)
 	}
 
-	// Print user JSON
 	for _, x := range user {
 		fmt.Println(x)
 	}
